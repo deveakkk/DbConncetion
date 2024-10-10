@@ -1,32 +1,41 @@
-import java.sql.Connection;
-import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
-
-public interface DbConnection {
-
-
-    default Connection connect() {
+public  class DbConnectionImpl implements DbConnection {
+    @Override
+    public void select() {
         try {
-            Class.forName("org.postgresql.Driver");
-            Connection connection = DriverManager.getConnection(
-                    "jdbc:postgresql://localhost:5432/products_db",
-                    "postgres",
-                    "admin"
-            );
+            var request = "SELECT * FROM public.products";
+            Statement statement = connect().createStatement();
+            ResultSet resultSet = statement.executeQuery(request);
 
+            while (resultSet.next()) {
+                var id = resultSet.getLong("id");
+                var modelName = resultSet.getString("product_name");
+                var price = resultSet.getDouble("price");
 
-            System.out.println("Connection succcesed!");
-            return connection;
-        } catch (ClassNotFoundException | SQLException e) {
-            System.out.println("Connection failed. Please, try again later.");
+                System.out.println("ID -" + id + ", model - " + modelName + ", price -" + price);
+            }
+        } catch (SQLException e) {
+            System.out.println("Cannot load data from db. Please try again.");
 
+            }
         }
-        return null;
+
+    @Override
+    public void insert() {
+
     }
 
-    void select();
-    void insert();
-    void update();
-    void delete();
+    @Override
+    public void update() {
+
+    }
+
+    @Override
+    public void delete() {
+
+    }
+
 }
